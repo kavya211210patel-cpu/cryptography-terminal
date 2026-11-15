@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>CryptoGraphy Terminal</title>
+      <style>
+           /*Hacker Aesthetic Styling */
+           :root {
+              --neon-red: #ff0000;
+              --dark-bg: #0a0a0a;
+              --panel-bg: #111111;
+         }
+        
+        body {
+             background-color: var(--dark-bg);
+             color: var(--neon-red);
+             font-family: 'Courier New' , Courier, monospace;
+             display: flex;
+             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+       }
+
+       .terminal {
+           background-color: var(--panel-bg);
+           border: 1px solid var(--neon-red);
+           box-shadow: 0 0 20px rgba(255 , 0 , 0 , 0.3);
+           padding: 30px;
+          border-radius: 8px; 
+          width: 100%;
+          max-width: 600px;
+      }
+
+      h1 {
+           text-align: center;
+           text-transform: uppercase;
+           letter-spacing: 2px;
+           margin-top: 0;
+           border-bottom: 1px solid var(--neon-red);
+           padding-bottom: 15px;
+      }
+       
+     label { 
+          display: block;
+          margin: 20px 0 5px;
+          font-weight: bold;
+     }
+
+    textarea, input[type="text"] {
+        width: 100%;
+        background-color: #000;
+        color: var(--neon-red);
+        border: 1px solid var(--neon-red);
+        padding: 12px;
+        font-family: 'Courier New' , Courier, monospace;
+        box-sizing: border-box;
+        border-radius: 4px;
+    }
+
+   textarea {
+       height: 120px;
+       resize: vertical;
+  }
+ 
+  textarea:focus, input[type="text"]:focus {
+       outline: none;
+       box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+
+  .button-container {
+       display: flex;
+       gap: 15px;
+      margin-top: 25px;
+  } 
+
+  button { 
+       flex: 1;
+       background-color: transparent;
+       color: var(--neon-red);
+       padding: 15px;
+       font-family: 'Courier New' , Courier, monospace;
+       font-weight: bold;
+       font-size: 16px;
+       text-transform: uppercase;
+       cursor: pointer;
+       transition: all 0.3s ease;
+       border-radius: 4px;
+   }
+
+  button:hover {
+       background-color: var(--neon-red);
+       color: var(--dark-bg);
+       box-shadow: 0 0 15px var(--neon-red);
+  }
+    </style>
+</head>
+<body>
+
+     <div class="terminal">
+         <h1>🔐 CryptoGraphy</h1>
+         
+         <label for="message">Input Message:</label>
+         <textarea id="message" placeholder="Type your message here..."></textarea>
+ 
+         <label for ="keyword">Secret Keyword:</label>
+         <input type="text" id="keyword" placeholder="e.g. , LEMON">
+
+         <div class="button-container"> 
+             <button onclick="runCipher(true)">🔐 Encrypt</button>
+             <button onclick="runCipher(false)">🔐 Decrypt</button>
+        </div>
+
+        <label for="output">Result:</label>
+        <textarea id="output" readonly placeholder="your scrambled or decoded text will appear here..."></textarea>
+        </div>	
+        <script>
+              // The Math Logic 
+	function vigenere(text, key, encrypt = true) {
+	    let result ="";	
+                // Remove space/symbols from the key and make it uppercase
+               key = key.replace(/[^A-Za-z]/g, "").toUpperCase();
+         
+              if (key.length === 0) return text;
+
+             let keyIndex = 0;
+             for (let i = 0; i < text.length; i++) {
+                  let char = text[i];
+                  
+                  // Only shift letters, ignore punctuation and spaces
+                  if (/[a-zA-Z]/.test(char)) {
+                     let isUpper = char === char.toUpperCase();
+                     let start = isUpper ? 65 : 97; // ASCII value for 'A' and 'a'
+
+                     // Find the shift based on the current letter of the keyword
+                    let shift = key.charCodeAt(keyIndex % key.length) - 65;
+
+                    // If decrypting, reverse the shift direction
+                    if (!encrypt) {
+                        shift = (26 - shift) % 26;
+                   }
+
+                   // Apply shift and wrap around the alphabet using modulo 26
+                  let shifted = (char.charCodeAt(0) - start + shift) % 26;
+                  result += String.fromCharCode(shifted + start);
+                  keyIndex++;
+           } else {
+               result +=char;
+          }
+     }
+     return result; 
+  }
+
+	// The Interface Logic 
+	function runCipher(isEncrypt) {
+                  const message = document.getElementById("message").value;
+                  const keyword = document.getElementById("keyword").value; 
+  
+                 if (!keyword.trim() || !/[A-Za-z]/.test(keyword)) {
+                    alert("ERROR: Please enter a secret keyword.");
+                    return;
+                 }
+
+                const result = vigenere(message, keyword, isEncrypt);
+                document.getElementById("output").value = result; 
+           }
+      </script>
+</body>
+</html>
